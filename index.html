@@ -37,7 +37,7 @@
             transition: transform 0.1s;
         }
         .pickup-btn:active {
-            transform: scale(0.95); /* Makes the button visually "press" down */
+            transform: scale(0.95); 
         }
         h1 { 
             font-size: 28px; 
@@ -55,10 +55,35 @@
     </div>
 
     <script>
-        // The Engine: This captures the tap 
+        // The Engine: Grabs GPS and shoots you a text
         document.getElementById("mainButton").addEventListener("click", function() {
-            document.getElementById("statusMessage").innerText = "PROCESSING...";
-            // We will add the money-making logic here next
+            const statusText = document.getElementById("statusMessage");
+            statusText.style.color = "#ff3b30";
+            statusText.innerText = "LOCATING...";
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    
+                    // The text message they will send you
+                    const message = "I have a converter for pickup! My exact location: https://maps.google.com/?q=" + lat + "," + lon;
+                    
+                    // PUT YOUR PHONE NUMBER HERE (No dashes, just the 10 digits)
+                    const yourPhoneNumber = "14253279885"; 
+                    
+                    // Opens the phone's native texting app
+                    window.location.href = "sms:" + yourPhoneNumber + "?body=" + encodeURIComponent(message);
+                    
+                    statusText.innerText = "TEXT APP OPENED!";
+                    statusText.style.color = "#4cd964"; // Turns green on success
+                    
+                }, function(error) {
+                    statusText.innerText = "YOU MUST ALLOW GPS ACCESS.";
+                });
+            } else {
+                statusText.innerText = "GPS NOT SUPPORTED ON THIS DEVICE.";
+            }
         });
     </script>
 
